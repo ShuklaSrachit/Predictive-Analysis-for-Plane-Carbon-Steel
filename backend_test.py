@@ -318,6 +318,162 @@ class SteelMicrostructureAPITester:
         
         return all_success
 
+    def test_specific_requirements(self) -> bool:
+        """Test specific requirements from review request"""
+        all_passed = True
+        
+        # Test 1: POST /api/predict with normalizing returns all fields including mechanical properties
+        normalizing_data = {
+            "carbon_content": 0.45,
+            "manganese_content": 0.65,
+            "silicon_content": 0.25,
+            "austenitizing_temp": 850,
+            "holding_time": 30,
+            "cooling_rate": 10,
+            "heat_treatment": "normalizing"
+        }
+        
+        try:
+            response = requests.post(f"{self.api_url}/predict", json=normalizing_data, timeout=15)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                mechanical_fields = ["yield_strength", "tensile_strength", "hardness", "elongation"]
+                missing_fields = [field for field in mechanical_fields if field not in data]
+                
+                if not missing_fields:
+                    self.log_test(
+                        "Normalizing - All Mechanical Properties",
+                        True,
+                        f"YS: {data['yield_strength']}, TS: {data['tensile_strength']}, HV: {data['hardness']}, El: {data['elongation']}"
+                    )
+                else:
+                    success = False
+                    all_passed = False
+                    self.log_test("Normalizing - All Mechanical Properties", False, f"Missing: {missing_fields}")
+            else:
+                all_passed = False
+                self.log_test("Normalizing - All Mechanical Properties", False, f"Status: {response.status_code}")
+        except Exception as e:
+            all_passed = False
+            self.log_test("Normalizing - All Mechanical Properties", False, f"Error: {str(e)}")
+        
+        # Test 2: POST /api/predict with quenching returns martensite > 0
+        quenching_data = {
+            "carbon_content": 0.6,
+            "manganese_content": 0.8,
+            "silicon_content": 0.3,
+            "austenitizing_temp": 900,
+            "holding_time": 45,
+            "cooling_rate": 100,
+            "heat_treatment": "quenching"
+        }
+        
+        try:
+            response = requests.post(f"{self.api_url}/predict", json=quenching_data, timeout=15)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                martensite = data.get("martensite_fraction", 0)
+                if martensite > 0:
+                    self.log_test("Quenching - Martensite Formation", True, f"Martensite: {martensite}%")
+                else:
+                    success = False
+                    all_passed = False
+                    self.log_test("Quenching - Martensite Formation", False, f"Martensite: {martensite}% (should be > 0)")
+            else:
+                all_passed = False
+                self.log_test("Quenching - Martensite Formation", False, f"Status: {response.status_code}")
+        except Exception as e:
+            all_passed = False
+            self.log_test("Quenching - Martensite Formation", False, f"Error: {str(e)}")
+        
+        # Test 3: POST /api/predict with annealing and cooling_rate > 1 returns 400 error
+        invalid_annealing_data = {
+            "carbon_content": 0.3,
+            "manganese_content": 0.5,
+            "silicon_content": 0.2,
+            "austenitizing_temp": 800,
+            "holding_time": 60,
+            "cooling_rate": 5.0,  # Invalid for annealing (> 1.0)
+            "heat_treatment": "annealing"
+        }
+        
+        try:
+            response = requests.post(f"{self.api_url}/predict", json=invalid_annealing_data, timeout=10)
+            success = response.status_code == 400
+            
+            if success:
+                error_msg = response.json().get("detail", "")
+                self.log_test("Annealing Cooling Rate Constraint", True, f"Error: {error_msg}")
+            else:
+                all_passed = False
+                self.log_test("Annealing Cooling Rate Constraint", False, f"Expected 400, got {response.status_code}")
+        except Exception as e:
+            all_passed = False
+            self.log_test("Annealing Cooling Rate Constraint", False, f"Error: {str(e)}")
+        
+        # Test 4: POST /api/predict with quenching and cooling_rate < 50 returns 400 error
+        invalid_quenching_data = {
+            "carbon_content": 0.8,
+            "manganese_content": 0.7,
+            "silicon_content": 0.25,
+            "austenitizing_temp": 850,
+            "holding_time": 30,
+            "cooling_rate": 20.0,  # Invalid for quenching (< 50)
+            "heat_treatment": "quenching"
+        }
+        
+        try:
+            response = requests.post(f"{self.api_url}/predict", json=invalid_quenching_data, timeout=10)
+            success = response.status_code == 400
+            
+            if success:
+                error_msg = response.json().get("detail", "")
+                self.log_test("Quenching Cooling Rate Constraint", True, f"Error: {error_msg}")
+            else:
+                all_passed = False
+                self.log_test("Quenching Cooling Rate Constraint", False, f"Expected 400, got {response.status_code}")
+        except Exception as e:
+            all_passed = False
+            self.log_test("Quenching Cooling Rate Constraint", False, f"Error: {str(e)}")
+        
+        return all_passed
+
+    def test_cooling_rate_ranges(self) -> bool:
+        """Test cooling rate range endpoints"""
+        expected_ranges = {
+            "annealing": {"min": 0.01, "max": 1.0},
+            "normalizing": {"min": 5, "max": 20},
+            "quenching": {"min": 50, "max": 200}
+        }
+        
+        all_passed = True
+        
+        for ht, expected in expected_ranges.items():
+            try:
+                response = requests.get(f"{self.api_url}/cooling-rate-range/{ht}", timeout=10)
+                success = response.status_code == 200
+                
+                if success:
+                    data = response.json()
+                    if data.get("min") == expected["min"] and data.get("max") == expected["max"]:
+                        self.log_test(f"Cooling Rate Range - {ht}", True, f"Min: {data['min']}, Max: {data['max']}")
+                    else:
+                        success = False
+                        all_passed = False
+                        self.log_test(f"Cooling Rate Range - {ht}", False, f"Expected {expected}, got {data}")
+                else:
+                    all_passed = False
+                    self.log_test(f"Cooling Rate Range - {ht}", False, f"Status: {response.status_code}")
+            except Exception as e:
+                all_passed = False
+                self.log_test(f"Cooling Rate Range - {ht}", False, f"Error: {str(e)}")
+        
+        return all_passed
+
     def test_invalid_inputs(self) -> bool:
         """Test API with invalid inputs"""
         invalid_cases = [
@@ -326,7 +482,7 @@ class SteelMicrostructureAPITester:
                 "data": {
                     "carbon_content": -0.5,  # Invalid: negative
                     "austenitizing_temp": 850,
-                    "holding_time": 2.0,
+                    "holding_time": 30,
                     "cooling_rate": 10.0,
                     "heat_treatment": "normalizing"
                 }
@@ -336,7 +492,7 @@ class SteelMicrostructureAPITester:
                 "data": {
                     "carbon_content": 0.45,
                     "austenitizing_temp": 850,
-                    "holding_time": 2.0,
+                    "holding_time": 30,
                     "cooling_rate": 10.0,
                     "heat_treatment": "invalid_treatment"
                 }
