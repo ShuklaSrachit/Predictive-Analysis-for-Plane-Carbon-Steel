@@ -548,6 +548,12 @@ class SteelMicrostructureAPITester:
             print("\n❌ API is not operational. Stopping tests.")
             return self.get_summary()
         
+        # Test specific requirements from review request
+        self.test_specific_requirements()
+        
+        # Test cooling rate ranges
+        self.test_cooling_rate_ranges()
+        
         # Test core prediction functionality
         prediction_data = self.test_prediction_endpoint()
         
