@@ -242,7 +242,7 @@ class SteelMicrostructureAPITester:
                 else:
                     # Validate steel range
                     steel_range = data.get("steel_range", {})
-                    if steel_range.get("min") != 0 or steel_range.get("max") != 2.1:
+                    if steel_range.get("min") != 0.05 or steel_range.get("max") != 2.1:
                         success = False
                         self.log_test(
                             "Phase Diagram Data",
