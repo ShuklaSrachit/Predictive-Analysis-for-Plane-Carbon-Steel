@@ -76,7 +76,7 @@ class SteelMicrostructureAPITester:
         test_data = {
             "carbon_content": 0.45,
             "austenitizing_temp": 850,
-            "holding_time": 2.0,
+            "holding_time": 30,
             "cooling_rate": 10.0,
             "heat_treatment": "normalizing"
         }
