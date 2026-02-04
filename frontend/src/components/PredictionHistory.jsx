@@ -12,9 +12,9 @@ import {
 export const PredictionHistory = ({ history, onDelete, onSelect }) => {
   if (!history || history.length === 0) {
     return (
-      <div className="text-center py-8" data-testid="no-history">
-        <p className="font-mono text-sm text-slate-500">No predictions yet</p>
-        <p className="text-xs text-slate-600 mt-1">
+      <div className="text-center py-12" data-testid="no-history">
+        <p className="font-medium text-[#2B3674]">No predictions yet</p>
+        <p className="text-sm text-[#A3AED0] mt-1">
           Your prediction history will appear here
         </p>
       </div>
@@ -43,52 +43,52 @@ export const PredictionHistory = ({ history, onDelete, onSelect }) => {
 
   return (
     <ScrollArea className="h-[350px]" data-testid="prediction-history">
-      <Table className="industrial-table">
+      <Table className="light-table">
         <TableHeader>
-          <TableRow className="border-white/10 hover:bg-transparent">
-            <TableHead className="text-slate-500 font-mono text-[10px]">Time</TableHead>
-            <TableHead className="text-slate-500 font-mono text-[10px]">C%</TableHead>
-            <TableHead className="text-slate-500 font-mono text-[10px]">Regime</TableHead>
-            <TableHead className="text-slate-500 font-mono text-[10px]">Grain</TableHead>
-            <TableHead className="text-slate-500 font-mono text-[10px]">YS (MPa)</TableHead>
-            <TableHead className="text-slate-500 font-mono text-[10px]">TS (MPa)</TableHead>
-            <TableHead className="text-slate-500 font-mono text-[10px]">HV</TableHead>
-            <TableHead className="text-slate-500 font-mono text-[10px]">Treatment</TableHead>
-            <TableHead className="text-slate-500 font-mono text-[10px] w-16">Actions</TableHead>
+          <TableRow className="border-[#E9EDF7] hover:bg-transparent">
+            <TableHead className="text-[#A3AED0]">Time</TableHead>
+            <TableHead className="text-[#A3AED0]">C%</TableHead>
+            <TableHead className="text-[#A3AED0]">Regime</TableHead>
+            <TableHead className="text-[#A3AED0]">Grain</TableHead>
+            <TableHead className="text-[#A3AED0]">YS (MPa)</TableHead>
+            <TableHead className="text-[#A3AED0]">TS (MPa)</TableHead>
+            <TableHead className="text-[#A3AED0]">HV</TableHead>
+            <TableHead className="text-[#A3AED0]">Treatment</TableHead>
+            <TableHead className="text-[#A3AED0] w-20">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {history.map((prediction, index) => (
             <TableRow
               key={prediction.id}
-              className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
+              className="border-[#E9EDF7] hover:bg-[#F4F7FE] cursor-pointer transition-colors"
               onClick={() => onSelect(prediction)}
               data-testid={`history-row-${index}`}
             >
-              <TableCell className="font-mono text-[10px] text-slate-400">
+              <TableCell className="text-sm text-[#A3AED0]">
                 {formatDate(prediction.timestamp)}
               </TableCell>
-              <TableCell className="font-mono text-xs text-white">
+              <TableCell className="font-mono text-sm font-medium text-[#2B3674]">
                 {prediction.carbon_content.toFixed(2)}%
               </TableCell>
               <TableCell>
-                <span className={`regime-badge text-[8px] px-1.5 py-0.5 ${getRegimeBadgeClass(prediction.regime)}`}>
+                <span className={`regime-badge text-[10px] ${getRegimeBadgeClass(prediction.regime)}`}>
                   {prediction.regime}
                 </span>
               </TableCell>
-              <TableCell className="font-mono text-xs text-[#60A5FA]">
+              <TableCell className="font-mono text-sm font-medium text-[#4318FF]">
                 {prediction.grain_size_astm.toFixed(1)}
               </TableCell>
-              <TableCell className="font-mono text-xs text-[#F59E0B]">
+              <TableCell className="font-mono text-sm text-[#7551FF]">
                 {prediction.yield_strength?.toFixed(0) || '—'}
               </TableCell>
-              <TableCell className="font-mono text-xs text-[#EF4444]">
+              <TableCell className="font-mono text-sm text-[#EE5D50]">
                 {prediction.tensile_strength?.toFixed(0) || '—'}
               </TableCell>
-              <TableCell className="font-mono text-xs text-[#A855F7]">
+              <TableCell className="font-mono text-sm text-[#868CFF]">
                 {prediction.hardness?.toFixed(0) || '—'}
               </TableCell>
-              <TableCell className="font-mono text-[10px] text-slate-400 capitalize">
+              <TableCell className="text-sm text-[#A3AED0] capitalize">
                 {prediction.heat_treatment}
               </TableCell>
               <TableCell>
@@ -98,22 +98,22 @@ export const PredictionHistory = ({ history, onDelete, onSelect }) => {
                       e.stopPropagation();
                       onSelect(prediction);
                     }}
-                    className="p-1 text-slate-500 hover:text-white hover:bg-white/10 transition-colors"
+                    className="p-2 text-[#A3AED0] hover:text-[#4318FF] hover:bg-[#F4F7FE] rounded-lg transition-colors"
                     title="View details"
                     data-testid={`view-btn-${index}`}
                   >
-                    <ArrowUpRight className="w-3 h-3" />
+                    <ArrowUpRight className="w-4 h-4" />
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onDelete(prediction.id);
                     }}
-                    className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    className="p-2 text-[#A3AED0] hover:text-[#EE5D50] hover:bg-[#FFF5F5] rounded-lg transition-colors"
                     title="Delete"
                     data-testid={`delete-btn-${index}`}
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </TableCell>

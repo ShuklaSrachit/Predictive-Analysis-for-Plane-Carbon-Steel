@@ -34,21 +34,21 @@ export const RegimeInfo = ({ regime, onClose }) => {
 
   const getRegimeColor = (regime) => {
     switch (regime) {
-      case "Hypoeutectoid": return "#3B82F6";
-      case "Eutectoid": return "#10B981";
-      case "Hypereutectoid": return "#F59E0B";
-      case "Cementite-Dominant": return "#EF4444";
-      default: return "#007AFF";
+      case "Hypoeutectoid": return "#4318FF";
+      case "Eutectoid": return "#05CD99";
+      case "Hypereutectoid": return "#FFB547";
+      case "Cementite-Dominant": return "#EE5D50";
+      default: return "#4318FF";
     }
   };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="bg-[#111111] border-white/10 max-w-lg" data-testid="regime-info-modal">
+      <DialogContent className="bg-white border-[#E0E5F2] rounded-3xl max-w-lg" data-testid="regime-info-modal">
         <DialogHeader>
-          <DialogTitle className="font-mono text-white flex items-center gap-3">
+          <DialogTitle className="text-[#2B3674] flex items-center gap-3">
             <div
-              className="w-3 h-3"
+              className="w-4 h-4 rounded-md"
               style={{ backgroundColor: getRegimeColor(regime) }}
             ></div>
             {regime} Steel
@@ -57,37 +57,42 @@ export const RegimeInfo = ({ regime, onClose }) => {
 
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-[#007AFF]" />
+            <Loader2 className="w-6 h-6 animate-spin text-[#4318FF]" />
           </div>
         ) : info ? (
-          <div className="space-y-4 text-sm">
-            <div>
-              <p className="data-label mb-1">Carbon Range</p>
-              <p className="font-mono text-white">{info.carbon_range}</p>
+          <div className="space-y-4">
+            <div className="bg-[#F4F7FE] rounded-xl p-4">
+              <p className="text-xs font-medium text-[#A3AED0] mb-1">Carbon Range</p>
+              <p className="font-semibold text-[#2B3674]">{info.carbon_range}</p>
             </div>
 
             <div>
-              <p className="data-label mb-1">Description</p>
-              <p className="text-slate-300 leading-relaxed">{info.description}</p>
+              <p className="text-xs font-medium text-[#A3AED0] mb-1">Description</p>
+              <p className="text-sm text-[#2B3674] leading-relaxed">{info.description}</p>
             </div>
 
             <div>
-              <p className="data-label mb-1">Phase Distribution</p>
-              <p className="text-slate-300">{info.phase_distribution}</p>
+              <p className="text-xs font-medium text-[#A3AED0] mb-1">Phase Distribution</p>
+              <p className="text-sm text-[#2B3674]">{info.phase_distribution}</p>
             </div>
 
             <div>
-              <p className="data-label mb-1">Properties</p>
-              <p className="text-slate-300">{info.properties}</p>
+              <p className="text-xs font-medium text-[#A3AED0] mb-1">Properties</p>
+              <p className="text-sm text-[#2B3674]">{info.properties}</p>
             </div>
 
             <div>
-              <p className="data-label mb-1">Applications</p>
-              <p className="text-slate-300">{info.applications}</p>
+              <p className="text-xs font-medium text-[#A3AED0] mb-1">Applications</p>
+              <p className="text-sm text-[#2B3674]">{info.applications}</p>
+            </div>
+
+            <div className="bg-[#F4F7FE] rounded-xl p-4">
+              <p className="text-xs font-medium text-[#A3AED0] mb-1">Heat Treatment Response</p>
+              <p className="text-sm text-[#2B3674]">{info.heat_treatment_response}</p>
             </div>
           </div>
         ) : (
-          <p className="text-slate-500 text-center py-8">
+          <p className="text-[#A3AED0] text-center py-8">
             Failed to load regime information
           </p>
         )}
