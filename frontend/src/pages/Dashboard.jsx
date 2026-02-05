@@ -8,6 +8,7 @@ import { PredictionResults } from "@/components/PredictionResults";
 import { PhaseChart } from "@/components/PhaseChart";
 import { PredictionHistory } from "@/components/PredictionHistory";
 import { RegimeInfo } from "@/components/RegimeInfo";
+import { MicrostructureVisualization } from "@/components/MicrostructureVisualization";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
