@@ -254,6 +254,22 @@ export default function Dashboard() {
                 <PhaseChart prediction={prediction} />
               </div>
             )}
+
+            {/* Microstructure Visualization */}
+            {prediction && (
+              <div className="dashboard-card p-6">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-[#1B2559] flex items-center justify-center">
+                    <Layers className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-[#2B3674]">Microstructure Visualization</h2>
+                    <p className="text-xs text-[#A3AED0]">Grid-based phase distribution simulation</p>
+                  </div>
+                </div>
+                <MicrostructureVisualization prediction={prediction} />
+              </div>
+            )}
           </div>
         </div>
 
