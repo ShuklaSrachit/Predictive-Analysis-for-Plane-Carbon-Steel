@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 10, "column": 0}, "map": {"version":3,"sources":["file:///app/frontend/src/components/ui/sonner.tsx"],"sourcesContent":["\"use client\";\n\nimport { Toaster as Sonner } from \"sonner\";\n\ntype ToasterProps = React.ComponentProps<typeof Sonner>;\n\nconst Toaster = ({ ...props }: ToasterProps) => {\n  return (\n    <Sonner\n      className=\"toaster group\"\n      toastOptions={{\n        classNames: {\n          toast:\n            \"group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg\",\n          description: \"group-[.toast]:text-muted-foreground\",\n          actionButton:\n            \"group-[.toast]:bg-primary group-[.toast]:text-primary-foreground\",\n          cancelButton:\n            \"group-[.toast]:bg-muted group-[.toast]:text-muted-foreground\",\n        },\n      }}\n      {...props}\n    />\n  );\n};\n\nexport { Toaster };\n"],"names":["Toaster","props","className","toastOptions","classNames","toast","description","actionButton","cancelButton"],"mappings":";;;;;AAEA;AAFA;;;AAMA,MAAMA,UAAU,CAAC,EAAE,GAAGC,OAAqB;IACzC,qBACE,0PAAC,+JAAM;QACLC,WAAU;QACVC,cAAc;YACZC,YAAY;gBACVC,OACE;gBACFC,aAAa;gBACbC,cACE;gBACFC,cACE;YACJ;QACF;QACC,GAAGP,KAAK;;;;;;AAGf"}}]
+}
