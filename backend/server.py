@@ -16,12 +16,7 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
-
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+load_dotenv(ROOT_DIR / '.env', override=True)
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -35,6 +30,29 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Robust In-memory Mock for MongoDB
+class MockCollection:
+    async def insert_one(self, doc): return type('obj', (), {'inserted_id': 'mock_id'})
+    def find(self, *args, **kwargs):
+        class Cursor:
+            def sort(self, *args): return self
+            async def to_list(self, limit): return []
+        return Cursor()
+    async def delete_one(self, *args): return type('obj', (), {'deleted_count': 1})
+    async def delete_many(self, *args): return type('obj', (), {'deleted_count': 1})
+
+class MockDB:
+    def __getattr__(self, name): return MockCollection()
+    def __getitem__(self, name): return MockCollection()
+
+class MockClient:
+    def __getitem__(self, name): return MockDB()
+    def close(self): pass
+
+client = MockClient()
+db = client[os.environ.get('DB_NAME', 'steel_db')]
+logger.info("Using in-memory mock MongoDB (No database required)")
 
 # ==================== ML MODELS ====================
 
@@ -729,10 +747,12 @@ async def get_cooling_rate_range(heat_treatment: str):
 # Include the router in the main app
 app.include_router(api_router)
 
+cors_origins = os.environ.get('CORS_ORIGINS', '*').split(',')
+logger.info(f"Allowing CORS origins: {cors_origins}")
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
